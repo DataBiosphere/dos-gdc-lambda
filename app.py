@@ -70,7 +70,7 @@ def gdc_to_dos_list_response(gdcr):
         #mres['data_objects'].append(gdc_to_ga4gh(req.json()))
         mres['data_objects'].append(gdc_to_ga4gh(hit))
     if len(gdcr.get('hits', [])) > 0:
-        mres['next_page_token'] = gdcr['pagination']['from'] + gdcr['pagination']['size']
+        mres['next_page_token'] = str(gdcr['pagination']['from'] + gdcr['pagination']['size'])
     return mres
 
 
