@@ -71,6 +71,20 @@ def gdc_to_ga4gh(gdc):
     }
     return data_object
 
+def not_found_response(data_object_id, e):
+    """
+    Creates a not found response to be returned using the exception
+    and requested data object ID.
+
+    :param data_object_id:
+    :param e:
+    :return:
+    """
+    not_found_msg = 'Data Object with data_object_id {} ' \
+                    'was not found. {} '.format(data_object_id, str(e))
+    return Response({'msg': not_found_msg},
+                    status_code=404)
+
 # Paths
 
 
@@ -86,8 +100,14 @@ def swagger():
     '/ga4gh/dos/v1/dataobjects/{data_object_id}', methods=['GET'], cors=True)
 def get_data_object(data_object_id):
     req = requests.get(
-        "{}/files/{}".format(GDC_URL, data_object_id))
-    return {'data_object': gdc_to_ga4gh(req.json()['data'])}
+         "{}/files/{}".format(GDC_URL, data_object_id))
+    if req.status_code == 404:
+        return not_found_response(data_object_id, req.json().get('message', ""))
+    try:
+        data_object = gdc_to_ga4gh(req.json()['data'])
+        return {'data_object': data_object}
+    except Exception as e:
+        return not_found_response(data_object_id, e)
 
 
 @app.route(
@@ -96,11 +116,16 @@ def list_data_objects():
     req_body = app.current_request.json_body
     page_token = req_body.get('page_token', None)
     page_size = req_body.get('page_size', None)
+
     if req_body and (page_token or page_size):
         gdc_req = dos_list_request_to_gdc(req_body)
     else:
         gdc_req = {}
     response = requests.get("{}/files/".format(GDC_URL), params=gdc_req)
+    if response.status_code != 200:
+        return Response(
+            {'msg': 'The request was malformed {}'.format(
+                response.json().get('message', ""))})
     list_response = response.json().get('data', [])
     # return list_response
     return gdc_to_dos_list_response(list_response)
