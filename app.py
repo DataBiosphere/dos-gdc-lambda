@@ -114,9 +114,12 @@ def get_data_object(data_object_id):
     '/ga4gh/dos/v1/dataobjects/list', methods=['POST'], cors=True)
 def list_data_objects():
     req_body = app.current_request.json_body
-    page_token = req_body.get('page_token', None)
-    page_size = req_body.get('page_size', None)
-
+    if req_body:
+        page_token = req_body.get('page_token', None)
+        page_size = req_body.get('page_size', None)
+    else:
+        page_token = "0"
+        page_size = 100
     if req_body and (page_token or page_size):
         gdc_req = dos_list_request_to_gdc(req_body)
     else:
