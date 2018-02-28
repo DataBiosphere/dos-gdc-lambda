@@ -2,14 +2,7 @@
 
 Presents NCI GDC data over GA4GH compliant methods.
 
-```                                                                                         
-+------------------+      +--------------+        +-------------------+
-| ga4gh-dos-client |------|dos-gdc-lambda|--------|api.gdc.cancer.gov |
-+--------|---------+      +--------------+        +-------------------+
-         |                        |                                                         
-         |                        |                                                         
-         |------------------swagger.json                                                    
-```
+<img src="https://raw.githubusercontent.com/DataBiosphere/dos-gdc-lambda/master/diagram.png" />
 
 We have created a lambda that creates a lightweight layer that can be used to access data in GDC using GA4GH libraries.
 
@@ -22,7 +15,7 @@ To make it easy for developers to create clients against this API, the Open API 
 Install chalice: `pip install chalice` and try it out yourself!
 
 ```
-git clone https://github.com/david4096/dos-gdc-lambda.git
+git clone https://github.com/DataBiosphere/dos-gdc-lambda.git
 cd dos-gdc-lambda
 chalice deploy
 ```
