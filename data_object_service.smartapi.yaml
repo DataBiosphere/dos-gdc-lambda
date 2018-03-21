@@ -1,23 +1,14 @@
 openapi: 3.0.0
 servers:
-  - url: https://{host}:{port}/{basePath}
-    description: The production API server
-    variables:
-      host:
-        default: dos-gdc.ucsc-cgp-dev.org
-        description: UCSC's Computational Genomics Platform Development
-      port:
-        enum:
-          - '443'
-        default: '443'
-      basePath:
-        # The default base includes a version in the path.
-        default: ga4gh/dos/v1
+  - url: https://dos-gdc.ucsc-cgp-dev/ga4gh/dos/v1
 info:
   title: Data Object Service
   version: 0.2.0
   x-implementationLanguage: en
   termsOfService: https://www.ga4gh.org/policies/termsandconditions.html
+  contact:
+    name: David Steinberg
+    email: davidcs@ucsc.edu
 paths:
   /databundles:
     post:
