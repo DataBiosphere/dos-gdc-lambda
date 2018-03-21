@@ -14,7 +14,7 @@ import yaml
 app = Chalice(app_name='dos-gdc-lambda')
 
 GDC_URL = 'https://api.gdc.cancer.gov'
-SWAGGER_URL = "https://ga4gh.github.io/data-object-service-schemas/swagger/data_object_service.swagger.yaml"  # NOQA
+SWAGGER_URL = "https://raw.githubusercontent.com/david4096/dos-gdc-lambda/smartapi/data_object_service.swagger.json"  # NOQA
 
 
 app = Chalice(app_name='dos-gdc-lambda', debug=True)
@@ -92,7 +92,7 @@ def not_found_response(data_object_id, e):
 def swagger():
     req = requests.get(SWAGGER_URL)
     swagger_dict = yaml.load(req.content)
-    swagger_dict['basePath'] = '/api/ga4gh/dos/v1'
+    # swagger_dict['basePath'] = '/api/ga4gh/dos/v1'
     return swagger_dict
 
 

@@ -1,0 +1,372 @@
+swagger: '2.0'
+basePath: '/ga4gh/dos/v1'
+info:
+  title: Data Object Service
+  version: 0.2.0
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /dataobjects/list:
+    post:
+      summary: List the Data Objects
+      operationId: ListDataObjects
+      responses:
+        '200':
+          description: The Data Objects were listed successfully.
+          schema:
+            $ref: '#/definitions/ListDataObjectsResponse'
+        '400':
+          description: The request is malformed.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '401':
+          description: The request is unauthorized.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '403':
+          description: The requester is not authorized to perform this action.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: An unexpected error occurred.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ListDataObjectsRequest'
+      tags:
+        - DataObjectService
+      x-swagger-router-controller: ga4gh.dos.server
+  '/dataobjects/{data_object_id}':
+    get:
+      summary: Retrieve a Data Object
+      operationId: GetDataObject
+      responses:
+        '200':
+          description: The Data Object was found successfully.
+          schema:
+            $ref: '#/definitions/GetDataObjectResponse'
+        '400':
+          description: The request is malformed.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '401':
+          description: The request is unauthorized.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '404':
+          description: The requested Data Object wasn't found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '403':
+          description: The requester is not authorized to perform this action.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: An unexpected error occurred.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      parameters:
+        - name: data_object_id
+          in: path
+          required: true
+          type: string
+        - name: version
+          description: |-
+            OPTIONAL
+            If provided will return the requested version of the selected Data Object.
+          in: query
+          required: false
+          type: string
+      tags:
+        - DataObjectService
+      x-swagger-router-controller: ga4gh.dos.server
+  '/dataobjects/{data_object_id}/versions':
+    get:
+      summary: Retrieve all versions of a Data Object
+      operationId: GetDataObjectVersions
+      responses:
+        '200':
+          description: The versions for the Data Object were returned successfully.
+          schema:
+            $ref: '#/definitions/GetDataObjectVersionsResponse'
+        '400':
+          description: The request is malformed.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '401':
+          description: The request is unauthorized.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '404':
+          description: The requested Data Object wasn't found.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '403':
+          description: The requester is not authorized to perform this action.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: An unexpected error occurred.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      parameters:
+        - name: data_object_id
+          in: path
+          required: true
+          type: string
+      tags:
+        - DataObjectService
+      x-swagger-router-controller: ga4gh.dos.server
+definitions:
+  SystemMetadata:
+    type: object
+    additionalProperties: true
+    description: |-
+            OPTIONAL
+            These values are reported by the underlying object store.
+            A set of key-value pairs that represent system metadata about the object.
+  UserMetadata:
+    type: object
+    additionalProperties: true
+    description: |-
+            OPTIONAL
+            A set of key-value pairs that represent metadata provided by the uploader.
+  Checksum:
+    type: object
+    properties:
+      checksum:
+        type: string
+        description: |-
+          REQUIRED
+          The hex-string encoded checksum for the Data.
+      type:
+        type: string
+        description: |-
+          OPTIONAL
+          The digest method used to create the checksum. If left unspecified md5
+          will be assumed.
+
+          possible values:
+          md5                # most blob stores provide a checksum using this
+          multipart-md5      # multipart uploads provide a specialized tag in S3
+          sha256
+          sha512
+  ChecksumRequest:
+    type: object
+    properties:
+      checksum:
+        type: string
+        description: |-
+          REQUIRED
+          The hexlified checksum that one would like to match on.
+      type:
+        type: string
+        description: |-
+          OPTIONAL
+          If provided will restrict responses to those that match the provided
+          type.
+
+          possible values:
+          md5                # most blob stores provide a checksum using this
+          multipart-md5      # multipart uploads provide a specialized tag in S3
+          sha256
+          sha512
+  DataObject:
+    type: object
+    properties:
+      id:
+        type: string
+        description: |-
+          REQUIRED
+          An identifier unique to this Data Object.
+      name:
+        type: string
+        description: |-
+          OPTIONAL
+          A string that can be optionally used to name a Data Object.
+      size:
+        type: string
+        format: int64
+        description: |-
+          REQUIRED
+          The computed size in bytes.
+      created:
+        type: string
+        format: date-time
+        description: |-
+          REQUIRED
+          Timestamp of object creation in RFC3339.
+      updated:
+        type: string
+        format: date-time
+        description: |-
+          OPTIONAL
+          Timestamp of update in RFC3339, identical to create timestamp in systems
+          that do not support updates.
+      version:
+        type: string
+        description: |-
+          OPTIONAL
+          A string representing a version.
+      mime_type:
+        type: string
+        description: |-
+          OPTIONAL
+          A string providing the mime-type of the Data Object.
+          For example, "application/json".
+      checksums:
+        type: array
+        items:
+          $ref: '#/definitions/Checksum'
+        description: |-
+          REQUIRED
+          The checksum of the Data Object. At least one checksum must be provided.
+      urls:
+        type: array
+        items:
+          $ref: '#/definitions/URL'
+        description: |-
+          OPTIONAL
+          The list of URLs that can be used to access the Data Object.
+      description:
+        type: string
+        description: |-
+          OPTIONAL
+          A human readable description of the contents of the Data Object.
+      aliases:
+        type: array
+        items:
+          type: string
+        description: |-
+          OPTIONAL
+          A list of strings that can be used to find this Data Object.
+          These aliases can be used to represent the Data Object's location in
+          a directory (e.g. "bucket/folder/file.name") to make Data Objects
+          more discoverable. They might also be used to represent
+  GetDataObjectResponse:
+    type: object
+    properties:
+      data_object:
+        $ref: '#/definitions/DataObject'
+        description: |-
+          REQUIRED
+          The Data Object that coincides with a specific GetDataObjectRequest.
+  GetDataObjectVersionsResponse:
+    type: object
+    properties:
+      data_objects:
+        type: array
+        items:
+          $ref: '#/definitions/DataObject'
+        description: |-
+          REQUIRED
+          All versions of the Data Objects that match the GetDataObjectVersions
+          request.
+  ListDataObjectsRequest:
+    type: object
+    properties:
+      alias:
+        type: string
+        description: |-
+          OPTIONAL
+          If provided will only return Data Objects with the given alias.
+      url:
+        type: string
+        description: |-
+          OPTIONAL
+          If provided will return only Data Objects with a that URL matches
+          this string.
+      checksum:
+        $ref: '#/definitions/ChecksumRequest'
+        description: |-
+          OPTIONAL
+          If provided will only return data object messages with the provided
+          checksum. If the checksum type is provided
+      page_size:
+        type: integer
+        format: int32
+        description: |-
+          OPTIONAL
+          Specifies the maximum number of results to return in a single page.
+          If unspecified, a system default will be used.
+      page_token:
+        type: string
+        description: |-
+          OPTIONAL
+          The continuation token, which is used to page through large result sets.
+          To get the next page of results, set this parameter to the value of
+          `next_page_token` from the previous response.
+    description: |-
+      Allows a requester to list and filter Data Objects. Only Data Objects
+      matching all of the requested parameters will be returned.
+  ListDataObjectsResponse:
+    type: object
+    properties:
+      data_objects:
+        type: array
+        items:
+          $ref: '#/definitions/DataObject'
+        description: The list of Data Objects.
+      next_page_token:
+        type: string
+        description: |-
+          The continuation token, which is used to page through large result sets.
+          Provide this value in a subsequent request to return the next page of
+          results. This field will be empty if there aren't any additional results.
+    description:  |-
+      A list of Data Objects matching the requested parameters, and a paging
+      token, that can be used to retrieve more results.
+  URL:
+    type: object
+    properties:
+      url:
+        type: string
+        description: |-
+          REQUIRED
+          A URL that can be used to access the file.
+      system_metadata:
+        $ref: '#/definitions/SystemMetadata'
+      user_metadata:
+        $ref: '#/definitions/UserMetadata'
+  UpdateDataObjectRequest:
+    type: object
+    properties:
+      data_object_id:
+        type: string
+        description: |-
+          REQUIRED
+          The identifier of the Data Object to be updated.
+      data_object:
+        $ref: '#/definitions/DataObject'
+        description: |-
+          REQUIRED
+          The new Data Object for this identifier.
+  UpdateDataObjectResponse:
+    type: object
+    properties:
+      data_object_id:
+        type: string
+        description: |-
+          REQUIRED
+          The identifier of the Data Object updated.
+  ErrorResponse:
+    description:
+      An object that can optionally include information about the error.
+    type: object
+    properties:
+      msg:
+        type: string
+        description: A detailed error message.
+      status_code:
+        type: integer
+        description: The integer representing the HTTP status code (e.g. 200, 404).
+
