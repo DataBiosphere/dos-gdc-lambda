@@ -1,8 +1,9 @@
 openapi: 3.0.0
 servers:
-  - url: https://dos-gdc.ucsc-cgp-dev/ga4gh/dos/v1
+  - url: https://dos-gdc.ucsc-cgp-dev.org/ga4gh/dos/v1
 info:
-  title: Data Object Service
+  title: Genomic Data Commons Data Object Service
+  description: Provides access to NCI GDC data using the Data Object Service schemas. 
   version: 0.2.0
   x-implementationLanguage: en
   termsOfService: https://www.ga4gh.org/policies/termsandconditions.html
