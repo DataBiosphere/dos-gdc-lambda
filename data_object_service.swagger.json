@@ -1,6 +1,6 @@
 {
   "swagger": "2.0",
-  "basePath": "api/ga4gh/dos/v1",
+  "basePath": "/ga4gh/dos/v1",
   "info": {
     "title": "Data Object Service",
     "version": "0.2.0"
