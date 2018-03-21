@@ -10,6 +10,11 @@ info:
   contact:
     name: David Steinberg
     email: davidcs@ucsc.edu
+tags:
+- name: NIHdatacommons
+- name: TCGA
+- name: Portals
+- name: PublicDataset
 paths:
   /dataobjects/list:
     post:
