@@ -92,7 +92,6 @@ def not_found_response(data_object_id, e):
 def swagger():
     req = requests.get(SWAGGER_URL)
     swagger_dict = yaml.load(req.content)
-    # swagger_dict['basePath'] = '/api/ga4gh/dos/v1'
     return swagger_dict
 
 
