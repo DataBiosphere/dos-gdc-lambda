@@ -14,7 +14,7 @@ import yaml
 app = Chalice(app_name='dos-gdc-lambda')
 
 GDC_URL = 'https://api.gdc.cancer.gov'
-SWAGGER_URL = "https://ga4gh.github.io/data-object-service-schemas/swagger/data_object_service.swagger.yaml"  # NOQA
+SWAGGER_URL = "https://raw.githubusercontent.com/david4096/dos-gdc-lambda/smartapi/data_object_service.swagger.yaml"  # NOQA
 
 
 app = Chalice(app_name='dos-gdc-lambda', debug=True)
@@ -71,6 +71,7 @@ def gdc_to_ga4gh(gdc):
     }
     return data_object
 
+
 def not_found_response(data_object_id, e):
     """
     Creates a not found response to be returned using the exception
@@ -92,7 +93,6 @@ def not_found_response(data_object_id, e):
 def swagger():
     req = requests.get(SWAGGER_URL)
     swagger_dict = yaml.load(req.content)
-    swagger_dict['basePath'] = '/api/ga4gh/dos/v1'
     return swagger_dict
 
 
@@ -102,7 +102,8 @@ def get_data_object(data_object_id):
     req = requests.get(
          "{}/files/{}".format(GDC_URL, data_object_id))
     if req.status_code == 404:
-        return not_found_response(data_object_id, req.json().get('message', ""))
+        return not_found_response(
+            data_object_id, req.json().get('message', ""))
     try:
         data_object = gdc_to_ga4gh(req.json()['data'])
         return {'data_object': data_object}
