@@ -25,6 +25,11 @@ This will return you a URL you can make GA4GH DOS requests against!
 
 For more please see the example notebook.
 
+## Release strategy
+
+Releases are marked with a GitHub Release and a tagged commit in the format `x.y.z`. At the time of writing, this project
+is not being continuously deployed.
+
 ## TODO
 
 * Validation
